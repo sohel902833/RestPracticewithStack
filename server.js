@@ -4,7 +4,7 @@ const bodyParser=require('body-parser')
 const cors=require('cors')
 const mongoose=require('mongoose')
 
-mongoose.connect('mongodb://localhost/contactsDb')
+mongoose.connect('mongodb://localhost/Quiz')
 
 const db=mongoose.connection
 db.on('error',(err=>{
@@ -15,7 +15,6 @@ db.once('open',()=>{
 })
 
 
-const contactRoute=require('./api/routes/contactRoutes')
 const userRoute=require('./api/routes/userRoutes')
 
 const app=express()
@@ -25,8 +24,12 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
 
 const PORT=process.env.PORT || 4000
-app.use('/api/contacts',contactRoute)
+
 app.use('/api/users',userRoute)
+app.use('/api/quiz',require('./api/routes/quizRoutes'))
+
+
+
 app.get('/',(req,res)=>{
     res.json("Md Sohrab Hossain")
 })

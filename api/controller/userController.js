@@ -10,93 +10,70 @@ const loginUser=(req,res,next)=>{
 
         User.findOne({email})
             .then(user=>{
-
                 if(user){
-                    bcrypt.compare(password,user.password, (err,result)=>{
-                            if(err){
-                                res.json({
-                                    message:"Error Occured"
-                                })
-                            }
-
-                            if(result){
-                                let token=jwt.sign({email:user.email,_id:user._id},"SECRET",{expiresIn:'2h'})
-                                res.json({
-                                    message:"Login Successful",
-                                    token:`Bearer ${token}`
-                                })
-                            }else{
-                                res.json({
-                                    message:"Login Failed, Password Doesn\'t Match"
-                                })
-                            }
-                    })
+                    if(password==user.password){
+                        res.json({
+                            _id:user._id,
+                            message:"Login Successful",
+                            name:user.name,
+                            status:"done",
+                            className:user.className,
+                            email:user.email
+                        })
+                    }else{
+                        res.json({
+                            message:"Login Failed, Password Doesn\'t Match",
+                            status:"failed"
+                   
+                        })
+                    }
                 }else{
                     res.json({
-                        message:"User Not Found"
+                        message:"User Not Found",
+                        status:"failed"
+                   
                     })
                 }
 
             }).catch(err=>{
                 res.json({
                     message:"Server Error",
+                    status:"failed",
                     err
                 })
             })
-
-
-
-
-
-
-
-
-
-
-
 }
 
 const registerUser=(req,res,next)=>{
 
-    let{email,password}=req.body
-    bcrypt.hash(password,10,(err,hash)=>{
-            if(err){
-                res.json({
-                    message:"Password Hashing Failed",
-                    err
-                })
-            }
+    let{name,email,password,className}=req.body
 
-            let newUser=new User({
-                email,
-                password:hash
-            })
+    let newUser=new User({name,email,password,className})
          newUser.save()
             .then(result=>{
                 res.json({
+                    _id:result._id,
                     message:"user created Successfully ",
-                    result
+                    status:"done",
+                    name:result.name,
+                    className:result.className,
+                    email:result.email
                 })
             }).catch(err=>{
 
                 if(err.keyValue.email){ 
                     res.json({
+                        status:"failed",
                         message:"This User is Already Exists"
                     })
                 }else{
                     res.json({
+                        status:"failed",
                         message:"user Created Failed",
                         err
                     })
                 }
-
-
             })
-    })
-
-
-
-
 }
 
 

@@ -3,6 +3,8 @@ const validator=require('validator')
 
 
 const userSchema=mongoose.Schema({
+    name:String,
+    className:String,
     email:{
         type:String,
         required:true,
